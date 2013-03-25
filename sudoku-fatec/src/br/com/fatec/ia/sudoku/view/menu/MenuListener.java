@@ -7,9 +7,8 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
 import br.com.fatec.ia.sudoku.Dificuldade;
-import br.com.fatec.ia.sudoku.view.GeradorSudokuView;
-import br.com.fatec.ia.sudoku.view.Messages;
 import br.com.fatec.ia.sudoku.view.SudokuHolder;
+import br.com.fatec.ia.sudoku.view.utils.Messages;
 
 public class MenuListener implements ActionListener {
 
@@ -27,12 +26,7 @@ public class MenuListener implements ActionListener {
 								Messages.getMessage("Deseja_Realmente_Criar_Novo_Jogo"),
 								Messages.getMessage("Confirmar"),
 								JOptionPane.OK_CANCEL_OPTION) == 0) {
-					// TODO - Gerar jogo
-					SudokuHolder
-							.getFramePrincipal()
-							.addNovoJogo(
-									GeradorSudokuView
-											.gerarNovoJogoSudoku(Dificuldade.INTERMEDIARIO));
+					SudokuHolder.gerarNovoJogo(Dificuldade.INTERMEDIARIO);
 				}
 			} else if (MENU_SAIR.equals(menu.getName())) {
 				System.exit(0);
@@ -40,5 +34,4 @@ public class MenuListener implements ActionListener {
 
 		}
 	}
-
 }

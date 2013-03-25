@@ -7,16 +7,20 @@ import javax.swing.JButton;
 
 import br.com.fatec.ia.sudoku.view.ModalSelecaoNumero;
 import br.com.fatec.ia.sudoku.view.SudokuHolder;
+import br.com.fatec.ia.sudoku.view.utils.SudokuConstants;
 
 public class PreencherBotaoListener implements ActionListener {
 
 	public void actionPerformed(ActionEvent e) {
 		JButton botaoSelecionado = (JButton) e.getSource();
-		System.out.println(botaoSelecionado.getName());
 
-		// TODO - Retirar coordenadas do botão para selecao
+		String coordTotal = botaoSelecionado.getName().replaceAll(
+				SudokuConstants.PREFIXO_BOTAO, "");
+		int coordX = Integer.parseInt(coordTotal.substring(0, 1));
+		int coordY = Integer.parseInt(coordTotal.substring(1, 2));
+		
 		ModalSelecaoNumero modalSelecaoNumero = new ModalSelecaoNumero(
-				SudokuHolder.getFramePrincipal(), true);
+				SudokuHolder.getFramePrincipal(), true, coordX, coordY);
 		modalSelecaoNumero.setVisible(true);
 
 	}

@@ -1,5 +1,10 @@
 package br.com.fatec.ia.sudoku.view;
 
+import java.awt.Point;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -8,18 +13,28 @@ import javax.swing.JPanel;
 import javax.swing.JSeparator;
 
 import br.com.fatec.ia.sudoku.view.menu.MenuListener;
+import br.com.fatec.ia.sudoku.view.utils.Messages;
 
 public class SudokuFrame extends JFrame {
 
 	private static final long serialVersionUID = -4793779446674833364L;
 
+	/**
+	 * Panel para armazenar a matriz do jogo do Sudoku. Cada vez que o menu for
+	 * alterado, será repintado este painel
+	 */
 	private JPanel panelCorpo;
+
+	/**
+	 * Armazena os botoes para cada posicao do Jogo do Sudoku
+	 */
+	private Map<Point, JButton> botoes = new HashMap<Point, JButton>();
 
 	public SudokuFrame() {
 		super(Messages.getMessage("Nome_App"));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setVisible(true);
 		pack();
+		setVisible(true);
 		setSize(500, 500);
 		setResizable(false);
 
@@ -31,14 +46,22 @@ public class SudokuFrame extends JFrame {
 		add(panelCorpo);
 	}
 
-	public void addNovoJogo(JPanel panelJogo) {
+	public void addNovoJogo(PanelJogoHolder holder) {
 		panelCorpo.removeAll();
-		panelCorpo.add(panelJogo);
+		panelCorpo.add(holder.getPainel());
 		panelCorpo.setSize(500, 500);
 		panelCorpo.setVisible(true);
 
 		panelCorpo.revalidate();
 		panelCorpo.repaint();
+
+		botoes.clear();
+		botoes.putAll(holder.getBotoes());
+	}
+
+	public void alterarValorBotao(int x, int y, String novoValor) {
+		JButton botao = botoes.get(new Point(x, y));
+		botao.setText(novoValor);
 	}
 
 	private void geraMenu() {
@@ -60,10 +83,6 @@ public class SudokuFrame extends JFrame {
 		JMenuBar menuBar = new JMenuBar();
 		menuBar.add(menuJogo);
 		setJMenuBar(menuBar);
-	}
-
-	public JPanel getPanelCorpo() {
-		return panelCorpo;
 	}
 
 }

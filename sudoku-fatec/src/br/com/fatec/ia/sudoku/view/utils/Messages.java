@@ -1,4 +1,4 @@
-package br.com.fatec.ia.sudoku.view;
+package br.com.fatec.ia.sudoku.view.utils;
 
 import java.util.Locale;
 import java.util.ResourceBundle;

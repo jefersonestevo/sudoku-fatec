@@ -1,8 +1,11 @@
 package br.com.fatec.ia.sudoku;
 
+import java.io.Serializable;
 
-public class JogoSudoku {
+public class JogoSudoku implements Serializable {
 
+	private static final long serialVersionUID = 469302297056158448L;
+	
 	public static final int POSICAO_EM_BRANCO = -1;
 	public static final int POSICAO_NAO_JOGADA = -2;
 	private static final int QNTD_CASAS = 9;
@@ -93,6 +96,13 @@ public class JogoSudoku {
 		return novoArray;
 	}
 
+	public int[][] getPalpitesUsuario() {
+		int[][] novoArray = new int[QNTD_CASAS][QNTD_CASAS];
+		System.arraycopy(palpitesUsuario, 0, novoArray, 0,
+				palpitesUsuario.length);
+		return novoArray;
+	}
+
 	public boolean isFimJogo() {
 		boolean isFimJogo = false;
 
@@ -124,4 +134,9 @@ public class JogoSudoku {
 
 		return isFimJogo;
 	}
+
+	public Dificuldade getDificuldade() {
+		return dificuldade;
+	}
+
 }

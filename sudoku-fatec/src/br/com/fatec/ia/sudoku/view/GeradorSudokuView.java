@@ -1,24 +1,24 @@
 package br.com.fatec.ia.sudoku.view;
 
+import java.awt.Color;
 import java.awt.GridLayout;
+import java.awt.Point;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
-import br.com.fatec.ia.sudoku.Dificuldade;
 import br.com.fatec.ia.sudoku.JogoSudoku;
-import br.com.fatec.ia.sudoku.gerador.GeradorSudoku;
 import br.com.fatec.ia.sudoku.view.menu.PreencherBotaoListener;
+import br.com.fatec.ia.sudoku.view.utils.SudokuConstants;
 
 public class GeradorSudokuView {
 
-	public static JPanel gerarNovoJogoSudoku(Dificuldade dificuldade) {
+	public static PanelJogoHolder gerarNovoPanelSudoku(JogoSudoku jogo) {
+		PanelJogoHolder holder = new PanelJogoHolder();
+
 		// Painel do Sudoku com os separators
 		JPanel panel = new JPanel(new GridLayout(3, 3));
-
-		JogoSudoku jogo = new GeradorSudoku().gerarJogoSudoku(dificuldade);
-		SudokuHolder.setJogoAtual(jogo);
 
 		int[][] campos = jogo.getJogoReal();
 
@@ -30,9 +30,7 @@ public class GeradorSudokuView {
 			for (int j = 0; j < campos[i].length; j++) {
 
 				int quadX = i / 3;
-				// quadX = quadX * 3;
 				int quadY = j / 3;
-				// quadY = quadY * 3;
 
 				panelFilho = panelQuadrante[quadX][quadY];
 				if (panelFilho == null) {
@@ -40,15 +38,20 @@ public class GeradorSudokuView {
 					panelQuadrante[quadX][quadY] = panelFilho;
 				}
 
-				String titulo = "";
+				JButton botao = null;
 				if (JogoSudoku.POSICAO_EM_BRANCO != campos[i][j]) {
-					titulo = new Integer(campos[i][j]).toString();
+					botao = new JButton(new Integer(campos[i][j]).toString());
+					botao.setBackground(Color.GREEN);
+				} else {
+					botao = new JButton();
+					botao.addActionListener(listenerBotao);
 				}
-				JButton botao = new JButton(titulo);
-				botao.setName("btn" + i + j);
-				botao.addActionListener(listenerBotao);
+				botao.setName(SudokuConstants.PREFIXO_BOTAO + i + j);
+				
 				panelFilho.add(botao);
 
+				// Add botao no holder
+				holder.getBotoes().put(new Point(i, j), botao);
 			}
 		}
 
@@ -58,17 +61,8 @@ public class GeradorSudokuView {
 			}
 		}
 
-		return panel;
-	}
-
-	public static void adicionarPalpiteUsuario(int x, int y, int valor) {
-		JogoSudoku jogo = SudokuHolder.getJogoAtual();
-		jogo.addPalpite(x, y, valor);
-
-		JPanel panel = SudokuHolder.getFramePrincipal().getPanelCorpo();
-		JButton btn = (JButton) panel.findComponentAt(x, y);
-
-		btn.setText("" + valor);
+		holder.setPainel(panel);
+		return holder;
 	}
 
 }

@@ -1,6 +1,8 @@
 package br.com.fatec.ia.sudoku;
 
-public enum Dificuldade {
+import java.io.Serializable;
+
+public enum Dificuldade implements Serializable {
 	FACIL(50), //
 	INTERMEDIARIO(40), //
 	DIFICIL(30);
