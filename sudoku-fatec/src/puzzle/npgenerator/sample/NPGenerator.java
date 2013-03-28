@@ -19,378 +19,392 @@ package puzzle.npgenerator.sample;
  *    
  */
 
-import	java.awt.*;
-import	java.awt.event.*;
-import	javax.swing.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
-import puzzle.npgenerator.v1.*;
+import javax.swing.JApplet;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
-// ƒAƒvƒŒƒbƒgƒrƒ…[ƒA‚ªQÆ‚·‚éHTML ƒ^ƒO‹Lq
+import puzzle.npgenerator.v1.Const;
+import puzzle.npgenerator.v1.Eval;
+import puzzle.npgenerator.v1.Generator;
+import puzzle.npgenerator.v1.Problem;
+import puzzle.npgenerator.v1.Status;
+
+// Æ’AÆ’vÆ’Å’Æ’bÆ’gÆ’rÆ’â€¦ï¿½[Æ’Aâ€šÂªÅ½Qï¿½Ã†â€šÂ·â€šÃ©HTML Æ’^Æ’Oâ€¹Lï¿½q
 /*
- 	<applet code="NPGenerator" width=600 height=550>
- 	</applet>
+ <applet code="NPGenerator" width=600 height=550>
+ </applet>
  */
 
 public class NPGenerator extends JApplet {
-    private	static NPBody		appbody;	// ƒAƒvƒŠƒP[ƒVƒ‡ƒ“ƒtƒŒ[ƒ€
+	private static final long serialVersionUID = 1994988027090819069L;
+	private static NPBody appbody; // Æ’AÆ’vÆ’Å Æ’Pï¿½[Æ’VÆ’â€¡Æ’â€œÆ’tÆ’Å’ï¿½[Æ’â‚¬
 
-    // ƒAƒvƒŒƒbƒg—p
-    public void init() {
-    	appbody = new NPBody();
-    	add(appbody);
-		appbody.getFocusOnBoard();   	
-    }
-    
-    // ƒAƒvƒŠƒP[ƒVƒ‡ƒ“—p
-    public static void main(String[] args) {
+	// Æ’AÆ’vÆ’Å’Æ’bÆ’gâ€”p
+	public void init() {
+		appbody = new NPBody();
+		add(appbody);
+		appbody.getFocusOnBoard();
+	}
+
+	// Æ’AÆ’vÆ’Å Æ’Pï¿½[Æ’VÆ’â€¡Æ’â€œâ€”p
+	public static void main(String[] args) {
 		JFrame frame = new JFrame("Number Place Generator Version 1.0.1");
 		appbody = new NPBody();
-		frame.add( appbody, "Center" );
-		
-		frame.setSize(600,550);
+		frame.add(appbody, "Center");
+
+		frame.setSize(600, 550);
 		frame.setVisible(true);
 		appbody.getFocusOnBoard();
 	}
 }
 
-// GUI–{‘Ì‚ÌÅãˆÊƒpƒlƒ‹
-//	À¿“I‚È–{‘Ì
-class	NPBody extends JPanel {
-	private Generator	generator = new Generator();
-	private Pattern	pattern   = new Pattern();
-	private Problem	problem;
-	
-	//	private int[][] question = new int[Const.size][Const.size];
-	private int[][] answer   = new int[Const.size][Const.size];
+// GUIâ€“{â€˜ÃŒâ€šÃŒï¿½Ã…ï¿½Ã£Ë†ÃŠÆ’pÆ’lÆ’â€¹
+// Å½Ã€Å½Â¿â€œIâ€šÃˆâ€“{â€˜ÃŒ
+class NPBody extends JPanel {
+
+	private static final long serialVersionUID = -6253615286835720351L;
+
+	private Generator generator = new Generator();
+	private Pattern pattern = new Pattern();
+	private Problem problem;
+
+	// private int[][] question = new int[Const.size][Const.size];
+	private int[][] answer = new int[Const.size][Const.size];
 	private boolean[][] hint = new boolean[Const.size][Const.size];
 
-	private int	     hintcount = 0;
-	private boolean    isunique  = false;	
-	
-	private int		difficultypoint = 0;
+	private int hintcount = 0;
+	private boolean isunique = false;
 
-	private    JBoard 		jboard;
-	private	JButton		clearallbutton;		// ‘SƒNƒŠƒA
-	private	JButton		clearwhitebutton;	// ”’ƒ}ƒXƒNƒŠƒA
-	private	JButton		clearnumberbutton;	// ”šƒNƒŠƒA
-	private	JLabel		hintcountlabel;		// ƒqƒ“ƒg”
-	private	JLabel		modelabel;			// Œ»İ‚Ìƒ‚[ƒh‚ğ•\
-	private	JButton		setbutton;			// Set      ƒ{ƒ^ƒ“
-	private	JButton		execbutton;			// Generate ƒ{ƒ^ƒ“
-	private	JButton		stopbutton;			// Stop		ƒ{ƒ^ƒ“
-	private	static boolean		stoppushed;
-	private	JButton		playbutton;			// Play     ƒ{ƒ^ƒ“
-	private	JButton		solvebutton;		// Solve@@ƒ{ƒ^ƒ“
-	private	JButton		autobutton;			// Solve@@ƒ{ƒ^ƒ“
-	private 	JCheckBox 	checkmark;
-	private 	boolean	checkmarkstate;	
-	
-	private	static Thread		genrunning;			// Às’†
-	private	static Thread		autorunning;		// Às’†
+	private int difficultypoint = 0;
 
-	private	final	static	int	SETUP_MODE 		= 1;
-	private	final	static	int GENERATING_MODE = 2;
-	private	final	static	int FINISH_MODE		= 3;
-	private	final	static	int AUTO_MODE 		= 4;
-	private	final	static	int	STOPPED_MODE	= 5;
-	private	final	static int	PLAYING_MODE 	= 6;
+	private JBoard jboard;
+	private JButton clearallbutton; // â€˜SÆ’NÆ’Å Æ’A
+	private JButton clearwhitebutton; // â€â€™Æ’}Æ’XÆ’NÆ’Å Æ’A
+	private JButton clearnumberbutton; // ï¿½â€Å½Å¡Æ’NÆ’Å Æ’A
+	private JLabel hintcountlabel; // Æ’qÆ’â€œÆ’gï¿½â€
+	private JLabel modelabel; // Å’Â»ï¿½Ãâ€šÃŒÆ’â€šï¿½[Æ’hâ€šÃ°â€¢\
+	private JButton setbutton; // Set Æ’{Æ’^Æ’â€œ
+	private JButton execbutton; // Generate Æ’{Æ’^Æ’â€œ
+	private JButton stopbutton; // Stop Æ’{Æ’^Æ’â€œ
+	private static boolean stoppushed;
+	private JButton playbutton; // Play Æ’{Æ’^Æ’â€œ
+	private JButton solvebutton; // Solveï¿½@ï¿½@Æ’{Æ’^Æ’â€œ
+	private JButton autobutton; // Solveï¿½@ï¿½@Æ’{Æ’^Æ’â€œ
+	private JCheckBox checkmark;
+	private boolean checkmarkstate;
 
-	private	int			currentmode = SETUP_MODE;
-	
-	private	Point		cursor = new Point(0,0);	// æ‚è‚ ‚¦‚¸¶ã
-	
-    
-	// ƒRƒ“ƒXƒgƒ‰ƒNƒ^[
+	private static Thread genrunning; // Å½Ã€ï¿½sâ€™â€ 
+	private static Thread autorunning; // Å½Ã€ï¿½sâ€™â€ 
+
+	private final static int SETUP_MODE = 1;
+	private final static int GENERATING_MODE = 2;
+	private final static int FINISH_MODE = 3;
+	private final static int AUTO_MODE = 4;
+	private final static int STOPPED_MODE = 5;
+	private final static int PLAYING_MODE = 6;
+
+	private int currentmode = SETUP_MODE;
+
+	private Point cursor = new Point(0, 0); // Å½Ã¦â€šÃ¨â€šÂ â€šÂ¦â€šÂ¸ï¿½Â¶ï¿½Ã£
+
+	// Æ’RÆ’â€œÆ’XÆ’gÆ’â€°Æ’NÆ’^ï¿½[
 	public NPBody() {
-		setLayout(new BorderLayout());		
-		
-		add( makeButtons(), "North" );		// §Œäƒ{ƒ^ƒ“—Ş
-		
+		setLayout(new BorderLayout());
+
+		add(makeButtons(), "North"); // ï¿½Â§Å’Ã¤Æ’{Æ’^Æ’â€œâ€”Ã
+
 		jboard = new JBoard();
-		add(jboard,"Center");
-		
+		add(jboard, "Center");
+
 		JLabel copylabel = new JLabel(
-				"Copyright(c)2007  Time Intermedia Corporation.  All rights reserved.", 
-				JLabel.CENTER );
-		add( copylabel, "South");
+				"Copyright(c)2007  Time Intermedia Corporation.  All rights reserved.",
+				JLabel.CENTER);
+		add(copylabel, "South");
 	}
 
-	// ƒqƒ“ƒg‚Ì”z—ñ‚Ì‰Šú‰»
+	// Æ’qÆ’â€œÆ’gâ€šÃŒâ€zâ€”Ã±â€šÃŒï¿½â€°Å Ãºâ€°Â»
 	private void clearHint() {
-		for( int x=0; x<9; ++x )
-			for( int y=0; y<9; ++y ) {
-				hint[x][y] = false;			
+		for (int x = 0; x < 9; ++x)
+			for (int y = 0; y < 9; ++y) {
+				hint[x][y] = false;
 			}
 	}
-	
-	// ‰ğ‚Ì”z—ñ‚Ì‰Šú‰»
-	private void clearAnswer( boolean mkrest ) {
-		for( int x=0; x<9; ++x )
-			for( int y=0; y<9; ++y ) {
-				if( !mkrest || !hint[x][y])
-					answer[x][y] = 0;		
-			}		
+
+	// â€°Ã°â€šÃŒâ€zâ€”Ã±â€šÃŒï¿½â€°Å Ãºâ€°Â»
+	private void clearAnswer(boolean mkrest) {
+		for (int x = 0; x < 9; ++x)
+			for (int y = 0; y < 9; ++y) {
+				if (!mkrest || !hint[x][y])
+					answer[x][y] = 0;
+			}
 	}
-	
-	// ã‘¤‚Ì§Œäƒ{ƒ^ƒ“—Ş
+
+	// ï¿½Ã£â€˜Â¤â€šÃŒï¿½Â§Å’Ã¤Æ’{Æ’^Æ’â€œâ€”Ã
 	private JPanel makeButtons() {
 		JPanel panel = new JPanel();
 		panel.setLayout(new BorderLayout());
-		
+
 		JPanel upperpanel = new JPanel();
 		JPanel lowerpanel = new JPanel();
 
-		// ã‚Ìƒ{ƒ^ƒ““™‚Ì•À‚Ñ	
+		// ï¿½Ã£â€šÃŒÆ’{Æ’^Æ’â€œâ€œâ„¢â€šÃŒâ€¢Ã€â€šÃ‘
 		makeModeLabel();
 		upperpanel.add(modelabel);
-		
+
 		makeClearAllButton();
 		upperpanel.add(clearallbutton);
 
 		makeClearWhiteButton();
 		upperpanel.add(clearwhitebutton);
-		
+
 		makeClearNumberButton();
 		upperpanel.add(clearnumberbutton);
-		
+
 		makeCheckMark();
 		upperpanel.add(checkmark);
-		
+
 		makeHintCountLabel();
 		upperpanel.add(hintcountlabel);
 
-		panel.add(upperpanel,"North");
+		panel.add(upperpanel, "North");
 
-		// ‰º‚Ìƒ{ƒ^ƒ““™‚Ì•À‚Ñ
+		// â€°Âºâ€šÃŒÆ’{Æ’^Æ’â€œâ€œâ„¢â€šÃŒâ€¢Ã€â€šÃ‘
 		makeSetupButton();
 		lowerpanel.add(setbutton);
-		
+
 		makeExecutionButton();
 		lowerpanel.add(execbutton);
-		
+
 		makePlayButton();
 		lowerpanel.add(playbutton);
-		
+
 		makeStopButton();
 		lowerpanel.add(stopbutton);
-		
+
 		makeAutoButton();
 		lowerpanel.add(autobutton);
-		
+
 		makeSolveButton();
 		lowerpanel.add(solvebutton);
-		
-		panel.add(lowerpanel,"South");		
-		
+
+		panel.add(lowerpanel, "South");
+
 		return panel;
 	}
-	
-	// ‘SÁ‹ƒ{ƒ^ƒ“
+
+	// â€˜Sï¿½Ãâ€¹Å½Æ’{Æ’^Æ’â€œ
 	private void makeClearAllButton() {
-		clearallbutton = new JButton( "Clear All");
-		clearallbutton.addActionListener(
-			new ActionListener() {
-				public void actionPerformed( ActionEvent e ) {
-					if( currentmode == GENERATING_MODE || currentmode == AUTO_MODE )
-						return;
-					clearHint();
-					clearAnswer(false);
-					toSetupMode();
-					jboard.paint();
-					jboard.requestFocus();
-				}
+		clearallbutton = new JButton("Clear All");
+		clearallbutton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (currentmode == GENERATING_MODE || currentmode == AUTO_MODE)
+					return;
+				clearHint();
+				clearAnswer(false);
+				toSetupMode();
+				jboard.paint();
+				jboard.requestFocus();
 			}
-		);
+		});
 	}
 
-	// ”’ƒ}ƒX‚Ì”šÁ‹ƒ{ƒ^ƒ“
+	// â€â€™Æ’}Æ’Xâ€šÃŒï¿½â€Å½Å¡ï¿½Ãâ€¹Å½Æ’{Æ’^Æ’â€œ
 	private void makeClearWhiteButton() {
-		clearwhitebutton = new JButton( "Clear White");
-		clearwhitebutton.addActionListener(
-			new ActionListener() {
-				public void actionPerformed( ActionEvent e ) {
-					if( currentmode == GENERATING_MODE || currentmode == AUTO_MODE )
-						return;
-					clearAnswer(true);
-					jboard.paint();
-					jboard.requestFocus();
-				}
+		clearwhitebutton = new JButton("Clear White");
+		clearwhitebutton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (currentmode == GENERATING_MODE || currentmode == AUTO_MODE)
+					return;
+				clearAnswer(true);
+				jboard.paint();
+				jboard.requestFocus();
 			}
-		);
+		});
 	}
-	
-	// ”šÁ‹ƒ{ƒ^ƒ“
+
+	// ï¿½â€Å½Å¡ï¿½Ãâ€¹Å½Æ’{Æ’^Æ’â€œ
 	private void makeClearNumberButton() {
-		clearnumberbutton = new JButton( "Clear Numbers");
-		clearnumberbutton.addActionListener(
-			new ActionListener() {
-				public void actionPerformed( ActionEvent e ) {
-					if( currentmode == GENERATING_MODE || currentmode == AUTO_MODE )
-						return;
-					clearAnswer(false);
-					jboard.paint();
-					jboard.requestFocus();
-				}
+		clearnumberbutton = new JButton("Clear Numbers");
+		clearnumberbutton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (currentmode == GENERATING_MODE || currentmode == AUTO_MODE)
+					return;
+				clearAnswer(false);
+				jboard.paint();
+				jboard.requestFocus();
 			}
-		);
+		});
 	}
 
-	// ƒZƒbƒgƒ{ƒ^ƒ“
+	// Æ’ZÆ’bÆ’gÆ’{Æ’^Æ’â€œ
 	private void makeSetupButton() {
-		setbutton = new JButton( "Setup" );
-		setbutton.addActionListener(
-			new ActionListener() {
-				public void actionPerformed( ActionEvent e ) {
-					if( currentmode == GENERATING_MODE || currentmode == AUTO_MODE )
-						return;
-					toSetupMode();
-					jboard.requestFocus();
-				}
+		setbutton = new JButton("Setup");
+		setbutton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (currentmode == GENERATING_MODE || currentmode == AUTO_MODE)
+					return;
+				toSetupMode();
+				jboard.requestFocus();
 			}
-		);
+		});
 	}
 
-	// Generate(©“®¶¬)ƒ{ƒ^ƒ“
+	// Generate(Å½Â©â€œÂ®ï¿½Â¶ï¿½Â¬)Æ’{Æ’^Æ’â€œ
 	private void makeExecutionButton() {
-		execbutton = new JButton( "Generate" );
-		execbutton.addActionListener(
-			new ActionListener() {
-				public void actionPerformed( ActionEvent e ) {
-					if( currentmode == GENERATING_MODE || currentmode == AUTO_MODE )
-						return;
-					generate();
-					jboard.requestFocus();
-				}
+		execbutton = new JButton("Generate");
+		execbutton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (currentmode == GENERATING_MODE || currentmode == AUTO_MODE)
+					return;
+				generate();
+				jboard.requestFocus();
 			}
-		);
-	}	
+		});
+	}
 
-	// Stopƒ{ƒ^ƒ“
+	// StopÆ’{Æ’^Æ’â€œ
 	private void makeStopButton() {
-		stopbutton = new JButton( "Stop" );
-		stopbutton.addActionListener(
-			new ActionListener() {
-				public void actionPerformed( ActionEvent e ) {
-					stoppushed = true;
-					setModeLabel( currentmode = STOPPED_MODE );
-					jboard.requestFocus();
-				}
+		stopbutton = new JButton("Stop");
+		stopbutton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				stoppushed = true;
+				setModeLabel(currentmode = STOPPED_MODE);
+				jboard.requestFocus();
 			}
-		);
-	}	
+		});
+	}
 
-	// Playƒ{ƒ^ƒ“
+	// PlayÆ’{Æ’^Æ’â€œ
 	private void makePlayButton() {
-		playbutton = new JButton( "Play" );
-		playbutton.addActionListener(
-			new ActionListener() {
-				public void actionPerformed( ActionEvent e ) {
-					if( currentmode == GENERATING_MODE || currentmode == AUTO_MODE )
-						return;
-					toPlayMode();
-					jboard.requestFocus();
-				}
+		playbutton = new JButton("Play");
+		playbutton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (currentmode == GENERATING_MODE || currentmode == AUTO_MODE)
+					return;
+				toPlayMode();
+				jboard.requestFocus();
 			}
-		);
+		});
 	}
-	
-	// Solveƒ{ƒ^ƒ“
-	private void makeSolveButton() {
-		solvebutton = new JButton( "Solve" );
-		solvebutton.addActionListener(
-			new ActionListener() {
-				public void actionPerformed( ActionEvent e ) {
-					if( currentmode == GENERATING_MODE || currentmode == AUTO_MODE )
-						return;
-					solveProblem();
-					jboard.requestFocus();
-				}
-			}
-		);
-	}		
 
-	// Autoƒ{ƒ^ƒ“
-	private void makeAutoButton() {
-		autobutton = new JButton( "Auto" );
-		autobutton.addActionListener(
-			new ActionListener() {
-				public void actionPerformed( ActionEvent e ) {
-					if( currentmode == GENERATING_MODE || currentmode == AUTO_MODE )
-						return;
-					autoProblem();
-					jboard.requestFocus();
-				}
+	// SolveÆ’{Æ’^Æ’â€œ
+	private void makeSolveButton() {
+		solvebutton = new JButton("Solve");
+		solvebutton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (currentmode == GENERATING_MODE || currentmode == AUTO_MODE)
+					return;
+				solveProblem();
+				jboard.requestFocus();
 			}
-		);
+		});
 	}
-	
-	// ƒqƒ“ƒg•\¦‚Ì—L–³‚Ìƒ`ƒFƒbƒNƒ{ƒbƒNƒX
+
+	// AutoÆ’{Æ’^Æ’â€œ
+	private void makeAutoButton() {
+		autobutton = new JButton("Auto");
+		autobutton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (currentmode == GENERATING_MODE || currentmode == AUTO_MODE)
+					return;
+				autoProblem();
+				jboard.requestFocus();
+			}
+		});
+	}
+
+	// Æ’qÆ’â€œÆ’gâ€¢\Å½Â¦â€šÃŒâ€”Lâ€“Â³â€šÃŒÆ’`Æ’FÆ’bÆ’NÆ’{Æ’bÆ’NÆ’X
 	private void makeCheckMark() {
 		checkmark = new JCheckBox("Hint");
-		checkmark.addActionListener(
-			new ActionListener() {
-				public void actionPerformed( ActionEvent e ) {
-					checkmarkstate = checkmark.isSelected();
-					jboard.paint();
-					jboard.requestFocus();
-				}
+		checkmark.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				checkmarkstate = checkmark.isSelected();
+				jboard.paint();
+				jboard.requestFocus();
 			}
-		);
-		
-		checkmark.setSelected( checkmarkstate = true );		
+		});
+
+		checkmark.setSelected(checkmarkstate = true);
 	}
 
-	// ƒ‚[ƒh•\¦iƒ‰ƒxƒ‹j
+	// Æ’â€šï¿½[Æ’hâ€¢\Å½Â¦ï¿½iÆ’â€°Æ’xÆ’â€¹ï¿½j
 	private void makeModeLabel() {
-		modelabel = new JLabel( "Setup" );
+		modelabel = new JLabel("Setup");
 	}
-	private void setModeLabel( int md ) {
+
+	private void setModeLabel(int md) {
 		String str = "current mode";
-		switch( md ) {
-		case SETUP_MODE:		str = "Setup";		break;
-		case GENERATING_MODE:	str = "Generating";	break;
-		case AUTO_MODE:			str = "Auto";		break;
-		case STOPPED_MODE:		str = "Stopped";	break;
-		case PLAYING_MODE:		str = "Play";		break;
+		switch (md) {
+		case SETUP_MODE:
+			str = "Setup";
+			break;
+		case GENERATING_MODE:
+			str = "Generating";
+			break;
+		case AUTO_MODE:
+			str = "Auto";
+			break;
+		case STOPPED_MODE:
+			str = "Stopped";
+			break;
+		case PLAYING_MODE:
+			str = "Play";
+			break;
 		}
 		modelabel.setText(str);
 	}
 
-	// ƒqƒ“ƒg
+	// Æ’qÆ’â€œÆ’g
 	private void makeHintCountLabel() {
-		hintcountlabel = new JLabel( "  0" );
+		hintcountlabel = new JLabel("  0");
 	}
-	
+
 	private void updatehintcount() {
 		hintcount = 0;
-		for( int x=0; x<9; x++ )
-			for( int y=0; y<9; y++ )
-				if( hint[x][y] )
+		for (int x = 0; x < 9; x++)
+			for (int y = 0; y < 9; y++)
+				if (hint[x][y])
 					++hintcount;
-		
-		hintcountlabel.setText( ""+hintcount );
+
+		hintcountlabel.setText("" + hintcount);
 	}
 
-	
-	// ƒZƒbƒgƒ‚[ƒh‚É‚·‚é
+	// Æ’ZÆ’bÆ’gÆ’â€šï¿½[Æ’hâ€šÃ‰â€šÂ·â€šÃ©
 	private void toSetupMode() {
-		setModeLabel( currentmode = SETUP_MODE );
+		setModeLabel(currentmode = SETUP_MODE);
 	}
 
-	// ©“®¶¬Aƒ}ƒ‹ƒ`ƒXƒŒƒbƒh‚É‚·‚é
+	// Å½Â©â€œÂ®ï¿½Â¶ï¿½Â¬ï¿½AÆ’}Æ’â€¹Æ’`Æ’XÆ’Å’Æ’bÆ’hâ€šÃ‰â€šÂ·â€šÃ©
 	private void generate() {
-		if( currentmode == GENERATING_MODE || currentmode == AUTO_MODE )
+		if (currentmode == GENERATING_MODE || currentmode == AUTO_MODE)
 			return;
-		setModeLabel( currentmode = GENERATING_MODE );
-		
+		setModeLabel(currentmode = GENERATING_MODE);
+
 		clearAnswer(true);
 		jboard.paint();
 
 		genrunning = new Thread() {
 			public void run() {
-				execution();	// ©“®¶¬Às
-				if( ! stoppushed ) {
-					jboard.paint();	
+				execution(); // Å½Â©â€œÂ®ï¿½Â¶ï¿½Â¬Å½Ã€ï¿½s
+				if (!stoppushed) {
+					jboard.paint();
 				}
 				genrunning = null;
 				currentmode = FINISH_MODE;
@@ -399,336 +413,370 @@ class	NPBody extends JPanel {
 		genrunning.start();
 	}
 
-	// ©“®¶¬‚ÌÀs–{‘Ì
+	// Å½Â©â€œÂ®ï¿½Â¶ï¿½Â¬â€šÃŒÅ½Ã€ï¿½sâ€“{â€˜ÃŒ
 	private void execution() {
-		long	starttime = System.currentTimeMillis();
+		long starttime = System.currentTimeMillis();
 		stoppushed = false;
 		isunique = false;
 		int loopcount = 0;
-		while( !isunique ) {
-			if( stoppushed ) {
-				setModeLabel( currentmode = STOPPED_MODE );
+		while (!isunique) {
+			if (stoppushed) {
+				setModeLabel(currentmode = STOPPED_MODE);
 				genrunning = null;
 				return;
 			}
 			++loopcount;
-			problem = generator.make( hint );
+			problem = generator.make(hint);
 			isunique = problem.isUnique();
 			long current = System.currentTimeMillis();
 			long elapsedtime = current - starttime;
-			modelabel.setText( "" + loopcount + " times / " + elapsedtime + " msec" );
-			
-			if( currentmode == AUTO_MODE  &&  elapsedtime > 10000 )
+			modelabel.setText("" + loopcount + " times / " + elapsedtime
+					+ " msec");
+
+			if (currentmode == AUTO_MODE && elapsedtime > 10000)
 				return;
 		}
 		problem.getSolution(answer);
 	}
 
-	// Autoƒ‚[ƒh
+	// AutoÆ’â€šï¿½[Æ’h
 	private void autoProblem() {
-		if( currentmode == GENERATING_MODE || currentmode == AUTO_MODE )
+		if (currentmode == GENERATING_MODE || currentmode == AUTO_MODE)
 			return;
 
-		setModeLabel( currentmode = AUTO_MODE );
+		setModeLabel(currentmode = AUTO_MODE);
 		clearAnswer(false);
 		jboard.paint();
-	
+
 		autorunning = new Thread() {
 			public void run() {
-				for(;;) {
-					autoexecution();	// ©“®¶¬Às
-					
-					if( stoppushed )
-						break;
-					
-					jboard.paint();	
-					try {Thread.sleep(1000); } catch( InterruptedException ex ) {}
+				for (;;) {
+					autoexecution(); // Å½Â©â€œÂ®ï¿½Â¶ï¿½Â¬Å½Ã€ï¿½s
 
-					if( stoppushed )
-						break;					
+					if (stoppushed)
+						break;
+
+					jboard.paint();
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException ex) {
+					}
+
+					if (stoppushed)
+						break;
 				}
 				autorunning = null;
 			}
 		};
-		autorunning.start();		
+		autorunning.start();
 	}
 
-	// ©“®¶¬(ƒpƒ^[ƒ“¶¬‚ğŠÜ‚Ş)‚ÌÀs–{‘Ì
+	// Å½Â©â€œÂ®ï¿½Â¶ï¿½Â¬(Æ’pÆ’^ï¿½[Æ’â€œï¿½Â¶ï¿½Â¬â€šÃ°Å Ãœâ€šÃ)â€šÃŒÅ½Ã€ï¿½sâ€“{â€˜ÃŒ
 	private void autoexecution() {
-		boolean[][] newhint = pattern.generateHint();	
-		for( int x=0; x<9; ++x )
-			for( int y=0; y<9; ++y )
+		boolean[][] newhint = pattern.generateHint();
+		for (int x = 0; x < 9; ++x)
+			for (int y = 0; y < 9; ++y)
 				hint[x][y] = newhint[x][y];
 		clearAnswer(false);
 
-		jboard.paint();	
+		jboard.paint();
 		updatehintcount();
-		
-		try {Thread.sleep(100); } catch( InterruptedException ex ) {}
-		
+
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException ex) {
+		}
+
 		execution();
 	}
-	
-	// Playƒ‚[ƒh
+
+	// PlayÆ’â€šï¿½[Æ’h
 	private void toPlayMode() {
-		setModeLabel( currentmode = PLAYING_MODE );
+		setModeLabel(currentmode = PLAYING_MODE);
 		clearAnswer(true);
 		jboard.paint();
 	}
 
-	// ‰ğ‚­
+	// â€°Ã°â€šÂ­
 	private void solveProblem() {
-//		long starttime = System.nanoTime();
+		// long starttime = System.nanoTime();
 		difficultypoint = 0;
 
-		//		solveProblemGen();
+		// solveProblemGen();
 		solveProblemEval();
-		
-//		long endtime = System.nanoTime();
-		
-//		System.out.println( "solvetime " + (endtime - starttime)/1000 + " micro sec" );
-		if( difficultypoint > 0 ) {
-//			System.out.println( "difficulty "+ difficultypoint );
-			modelabel.setText( difficultypoint + " point" );
+
+		// long endtime = System.nanoTime();
+
+		// System.out.println( "solvetime " + (endtime - starttime)/1000 +
+		// " micro sec" );
+		if (difficultypoint > 0) {
+			// System.out.println( "difficulty "+ difficultypoint );
+			modelabel.setText(difficultypoint + " point");
 		}
-		jboard.paint();	
+		jboard.paint();
 	}
 
-	// ƒWƒFƒlƒŒ[ƒ^‚©‚çŒÄ‚Ôƒ\ƒ‹ƒo[‚ğg‚Á‚½Solve (Œ»İ–¢g—p)
-	private void solveProblemGen() {
-		Status	matrix  = new Status();
-		int[][] num = matrix.getNum();		// matrix‚Ì”Õ–Ê
-		Solver 	solver = new Solver();
-		boolean[][] temphint = new boolean[9][9];
-		for( int x=0; x<9; ++x )
-			for( int y=0; y<9; ++y ) {
-				temphint[x][y] = (num[x][y] = answer[x][y]) != 0;
-			}
+	// Æ’WÆ’FÆ’lÆ’Å’ï¿½[Æ’^â€šÂ©â€šÃ§Å’Ã„â€šÃ”Æ’\Æ’â€¹Æ’oï¿½[â€šÃ°Å½gâ€šÃâ€šÂ½Solve (Å’Â»ï¿½Ãâ€“Â¢Å½gâ€”p)
+	// private void solveProblemGen() {
+	// Status matrix = new Status();
+	// int[][] num = matrix.getNum(); // matrixâ€šÃŒâ€Ã•â€“ÃŠ
+	// Solver solver = new Solver();
+	// boolean[][] temphint = new boolean[9][9];
+	// for( int x=0; x<9; ++x )
+	// for( int y=0; y<9; ++y ) {
+	// temphint[x][y] = (num[x][y] = answer[x][y]) != 0;
+	// }
+	//
+	// matrix.clear(temphint);
+	// matrix = solver.solve(matrix);
+	//
+	// num = matrix.getNum();
+	// for( int x=0; x<9; ++x )
+	// for( int y=0; y<9; ++y )
+	// answer[x][y] = num[x][y];
+	//
+	// jboard.paint();
+	// }
 
-		matrix.clear(temphint);
-		matrix = solver.solve(matrix);
-		
-		num = matrix.getNum();
-		for( int x=0; x<9; ++x )
-			for( int y=0; y<9; ++y )
-				answer[x][y] = num[x][y];
-
-		jboard.paint();	
-	}
-
-	// •]‰¿‚Ì‚½‚ß‚Ìƒ\ƒ‹ƒo[‚ğg‚Á‚½Solve
+	// â€¢]â€°Â¿â€šÃŒâ€šÂ½â€šÃŸâ€šÃŒÆ’\Æ’â€¹Æ’oï¿½[â€šÃ°Å½gâ€šÃâ€šÂ½Solve
 	private void solveProblemEval() {
-		Status	matrix  = new Status();
-		Eval 	eval = new Eval();
+		Status matrix = new Status();
+		Eval eval = new Eval();
 		difficultypoint = 0;
-		
-		matrix = eval.solve( answer );
-		if( !matrix.isNoAnswer() && matrix.getSpaceCount()==0 )
+
+		matrix = eval.solve(answer);
+		if (!matrix.isNoAnswer() && matrix.getSpaceCount() == 0)
 			difficultypoint = eval.getPoint();
-		
+
 		int[][] num = matrix.getNum();
-		for( int x=0; x<9; ++x )
-			for( int y=0; y<9; ++y )
+		for (int x = 0; x < 9; ++x)
+			for (int y = 0; y < 9; ++y)
 				answer[x][y] = num[x][y];
 
-		jboard.paint();		
+		jboard.paint();
 	}
-	
-	// ƒtƒH[ƒJƒX‚Ìæ“¾
+
+	// Æ’tÆ’Hï¿½[Æ’JÆ’Xâ€šÃŒÅ½Ã¦â€œÂ¾
 	public void getFocusOnBoard() {
 		jboard.requestFocus();
 	}
-	
-	// –â‘è”Õ–Ê•\¦
+
+	// â€“Ã¢â€˜Ã¨â€Ã•â€“ÃŠâ€¢\Å½Â¦
 	class JBoard extends JPanel {
+		private static final long serialVersionUID = 1L;
+
 		private Color bgcolor = Color.white;
-		private Color markcolor = new Color(0xc0,0xde,0xff);
-		private int	bwidth, bheight, bsize, unit;
-		private int	x0, y0;
+		private Color markcolor = new Color(0xc0, 0xde, 0xff);
+		private int bwidth, bheight, bsize, unit;
+		private int x0, y0;
 		private Graphics gr;
-		
+
 		JBoard() {
 			super();
-			setBackground( Color.white );
-			
-			addMouseListener(
-				new MouseAdapter() {
-					public void mousePressed( MouseEvent e ) {
-						int xi = xidx(e.getX());
-						int yi = yidx(e.getY());
-						if( xi<0 || yi<0 )
-							return;
+			setBackground(Color.white);
 
-						if( currentmode == SETUP_MODE ) {
-							hint[xi][yi] = !hint[xi][yi];
-							updatehintcount();
-						}
-						cursormoveto( xi, yi );						
+			addMouseListener(new MouseAdapter() {
+				public void mousePressed(MouseEvent e) {
+					int xi = xidx(e.getX());
+					int yi = yidx(e.getY());
+					if (xi < 0 || yi < 0)
+						return;
+
+					if (currentmode == SETUP_MODE) {
+						hint[xi][yi] = !hint[xi][yi];
+						updatehintcount();
 					}
+					cursormoveto(xi, yi);
 				}
-			);
-			
-			addKeyListener(
-				new KeyAdapter() {
-					public void keyPressed( KeyEvent e ) {
-						switch( e.getKeyCode() ) {
-						case KeyEvent.VK_LEFT:
-							cursormove( -1, 0 );	return;
-						case KeyEvent.VK_UP:
-							cursormove( 0, -1 );	return;
-						case KeyEvent.VK_RIGHT:
-							cursormove( +1, 0 );	return;
-						case KeyEvent.VK_DOWN:
-							cursormove( 0, +1 );	return;
-						}
-						
-						int v = -1;
-						switch( e.getKeyChar() ) {
-						case ' ':
-						case '0':	v = 0;	break;
-						case '1':	v = 1;	break;	
-						case '2':	v = 2;	break;
-						case '3':	v = 3;	break;
-						case '4':	v = 4;	break;
-						case '5':	v = 5;	break;
-						case '6':	v = 6;	break;
-						case '7':	v = 7;	break;
-						case '8':	v = 8;	break;
-						case '9':	v = 9;	break;
-						}
-						if( v < 0 )
-							return;
-						if( currentmode == PLAYING_MODE && hint[cursor.x][cursor.y])
-							return;
-						
-						answer[cursor.x][cursor.y] = v;
-						paintCell();
+			});
+
+			addKeyListener(new KeyAdapter() {
+				public void keyPressed(KeyEvent e) {
+					switch (e.getKeyCode()) {
+					case KeyEvent.VK_LEFT:
+						cursormove(-1, 0);
+						return;
+					case KeyEvent.VK_UP:
+						cursormove(0, -1);
+						return;
+					case KeyEvent.VK_RIGHT:
+						cursormove(+1, 0);
+						return;
+					case KeyEvent.VK_DOWN:
+						cursormove(0, +1);
+						return;
 					}
+
+					int v = -1;
+					switch (e.getKeyChar()) {
+					case ' ':
+					case '0':
+						v = 0;
+						break;
+					case '1':
+						v = 1;
+						break;
+					case '2':
+						v = 2;
+						break;
+					case '3':
+						v = 3;
+						break;
+					case '4':
+						v = 4;
+						break;
+					case '5':
+						v = 5;
+						break;
+					case '6':
+						v = 6;
+						break;
+					case '7':
+						v = 7;
+						break;
+					case '8':
+						v = 8;
+						break;
+					case '9':
+						v = 9;
+						break;
+					}
+					if (v < 0)
+						return;
+					if (currentmode == PLAYING_MODE && hint[cursor.x][cursor.y])
+						return;
+
+					answer[cursor.x][cursor.y] = v;
+					paintCell();
 				}
-			);
+			});
 		}
 
-		// ƒJ[ƒ\ƒ‹‚ÌˆÚ“®
-		private void cursormove( int dx, int dy ) {
+		// Æ’Jï¿½[Æ’\Æ’â€¹â€šÃŒË†Ãšâ€œÂ®
+		private void cursormove(int dx, int dy) {
 			int x = (cursor.x + 9 + dx) % 9;
-			int y = (cursor.y + 9 + dy) % 9;	
-			cursormoveto( x, y );
+			int y = (cursor.y + 9 + dy) % 9;
+			cursormoveto(x, y);
 		}
-		
-		private void cursormoveto( int x, int y ) {
+
+		private void cursormoveto(int x, int y) {
 			int oldx = cursor.x;
 			int oldy = cursor.y;
 
 			cursor.x = x;
 			cursor.y = y;
 			gr = getGraphics();
-			paintCell( oldx, oldy );
-			paintCell( cursor.x, cursor.y );			
-		}
-		 
-		// •\¦‚·‚éB•\¦‚·‚é“à—e‚ÍAanswer[][]
-		public void paint() {
-			paint( getGraphics() );
+			paintCell(oldx, oldy);
+			paintCell(cursor.x, cursor.y);
 		}
 
-		public void paint( Graphics g ) {
+		// â€¢\Å½Â¦â€šÂ·â€šÃ©ï¿½Bâ€¢\Å½Â¦â€šÂ·â€šÃ©â€œÃ â€”eâ€šÃï¿½Aanswer[][]
+		public void paint() {
+			paint(getGraphics());
+		}
+
+		public void paint(Graphics g) {
 			gr = g;
 			Dimension sz = getSize();
-			bwidth  = sz.width;
+			bwidth = sz.width;
 			bheight = sz.height;
-			g.setColor( Color.white);
-			g.fillRect(0,0, bwidth, bheight );
-			
+			g.setColor(Color.white);
+			g.fillRect(0, 0, bwidth, bheight);
+
 			linedraw();
 			paintCells();
 		}
-		
-		// ü‚Ì•`‰æ
+
+		// ï¿½Ã¼â€šÃŒâ€¢`â€°Ã¦
 		private void linedraw() {
-			gr.setColor( Color.black);
-			bsize = Math.min(bwidth,bheight);
+			gr.setColor(Color.black);
+			bsize = Math.min(bwidth, bheight);
 			unit = bsize / 10;
-			x0 = (bwidth - unit*9) / 2;
-			y0 = (bheight - unit*9) / 2;
-			
-			for( int i=0; i<=9; ++i ) {
-				int	w = (i%3==0) ? 5 : 1;
-				gr.fillRect( x0-w/2, yi(i)-w/2, unit*9+w, w );	// ‰¡ü
-				gr.fillRect( xi(i)-w/2, y0-w/2, w, unit*9+w );	// cü
+			x0 = (bwidth - unit * 9) / 2;
+			y0 = (bheight - unit * 9) / 2;
+
+			for (int i = 0; i <= 9; ++i) {
+				int w = (i % 3 == 0) ? 5 : 1;
+				gr.fillRect(x0 - w / 2, yi(i) - w / 2, unit * 9 + w, w); // â€°Â¡ï¿½Ã¼
+				gr.fillRect(xi(i) - w / 2, y0 - w / 2, w, unit * 9 + w); // ï¿½cï¿½Ã¼
 			}
 		}
 
-		// ƒ}ƒX‚ÌƒCƒ“ƒfƒbƒNƒX‚ÆAƒpƒlƒ‹ã‚Å‚ÌˆÊ’uŠÖŒW‚Ì•ÏŠ·
-		private int xi( int i ) { return x0 + unit * i; }
-		private int yi( int i ) { return y0 + unit * i; }
+		// Æ’}Æ’Xâ€šÃŒÆ’CÆ’â€œÆ’fÆ’bÆ’NÆ’Xâ€šÃ†ï¿½AÆ’pÆ’lÆ’â€¹ï¿½Ã£â€šÃ…â€šÃŒË†ÃŠâ€™uÅ Ã–Å’Wâ€šÃŒâ€¢ÃÅ Â·
+		private int xi(int i) {
+			return x0 + unit * i;
+		}
 
-		private int xidx( int px ) {
-			for( int i=0; i<9; ++i ) {
-				if( xi(i) <= px && px<=xi(i+1) )
+		private int yi(int i) {
+			return y0 + unit * i;
+		}
+
+		private int xidx(int px) {
+			for (int i = 0; i < 9; ++i) {
+				if (xi(i) <= px && px <= xi(i + 1))
 					return i;
 			}
 			return -1;
 		}
 
-		private int yidx( int py ) {
-			for( int i=0; i<9; ++i ) {
-				if( yi(i) <= py && py<=yi(i+1) )
+		private int yidx(int py) {
+			for (int i = 0; i < 9; ++i) {
+				if (yi(i) <= py && py <= yi(i + 1))
 					return i;
 			}
 			return -1;
 		}
-		
-		// ‘Sƒ}ƒX‚Ì•`‰æ
+
+		// â€˜SÆ’}Æ’Xâ€šÃŒâ€¢`â€°Ã¦
 		private void paintCells() {
-			for( int x=0; x<9; ++x )
-				for( int y=0; y<9; ++y )
-					paintCell( x, y );
+			for (int x = 0; x < 9; ++x)
+				for (int y = 0; y < 9; ++y)
+					paintCell(x, y);
 		}
 
-		// ƒ}ƒX‚Ì•`‰æ
+		// Æ’}Æ’Xâ€šÃŒâ€¢`â€°Ã¦
 		private void paintCell() {
-			paintCell(cursor.x,cursor.y);
+			paintCell(cursor.x, cursor.y);
 		}
-		
-		private void paintCell( int x, int y ) {
+
+		private void paintCell(int x, int y) {
 			gr.setColor((checkmarkstate && hint[x][y]) ? markcolor : bgcolor);
-			int x0 = xi(x)   + ((x%3==0)  ?3:1);
-			int x1 = xi(x+1) - (((x+1)%3==0?3:1));
-			int y0 = yi(y)   + ((y%3==0)  ?3:1);
-			int y1 = yi(y+1) - (((y+1)%3==0?3:1));
-			gr.fillRect( x0,y0,x1-x0+1,y1-y0+1);	// Û‚Ç‚¢‚±‚Æ‚ğ‚â‚Á‚Ä‚¢‚é‚È
-			
+			int x0 = xi(x) + ((x % 3 == 0) ? 3 : 1);
+			int x1 = xi(x + 1) - (((x + 1) % 3 == 0 ? 3 : 1));
+			int y0 = yi(y) + ((y % 3 == 0) ? 3 : 1);
+			int y1 = yi(y + 1) - (((y + 1) % 3 == 0 ? 3 : 1));
+			gr.fillRect(x0, y0, x1 - x0 + 1, y1 - y0 + 1); // ï¿½Ã›â€šÃ‡â€šÂ¢â€šÂ±â€šÃ†â€šÃ°â€šÃ¢â€šÃâ€šÃ„â€šÂ¢â€šÃ©â€šÃˆ
+
 			// cursor
-			if( cursor.x == x && cursor.y == y )
-				drawCursor(x,y);
-			
+			if (cursor.x == x && cursor.y == y)
+				drawCursor(x, y);
+
 			int v = answer[x][y];
-			if( v == 0)
+			if (v == 0)
 				return;
-			String str = ""+v;
+			String str = "" + v;
 			Color col = hint[x][y] ? Color.black : Color.blue;
-			
-			gr.setColor( col );
-			Font font = new Font( "Dialog", Font.BOLD, unit*4/5 );
+
+			gr.setColor(col);
+			Font font = new Font("Dialog", Font.BOLD, unit * 4 / 5);
 			gr.setFont(font);
-						
-			FontMetrics fm = getFontMetrics( gr.getFont() );
-			int xx = xi(x) + (unit - fm.stringWidth(str))/2;
-			int yy = yi(y) + (unit - fm.getHeight())/2 + fm.getAscent();
-			gr.drawString( str, xx, yy );		
+
+			FontMetrics fm = getFontMetrics(gr.getFont());
+			int xx = xi(x) + (unit - fm.stringWidth(str)) / 2;
+			int yy = yi(y) + (unit - fm.getHeight()) / 2 + fm.getAscent();
+			gr.drawString(str, xx, yy);
 		}
-		
-		// ƒ}ƒX“à•”‚ÌƒJ[ƒ\ƒ‹‚Ì•`‰æ
-		private void drawCursor( int x, int y ) {
-			int x0 = xi(x)   + ((x%3==0)  ?3:1);
-			int x1 = xi(x+1) - (((x+1)%3==0?3:1));
-			int y0 = yi(y)   + ((y%3==0)  ?3:1);
-			int y1 = yi(y+1) - (((y+1)%3==0?3:1));
-			
+
+		// Æ’}Æ’Xâ€œÃ â€¢â€â€šÃŒÆ’Jï¿½[Æ’\Æ’â€¹â€šÃŒâ€¢`â€°Ã¦
+		private void drawCursor(int x, int y) {
+			int x0 = xi(x) + ((x % 3 == 0) ? 3 : 1);
+			int x1 = xi(x + 1) - (((x + 1) % 3 == 0 ? 3 : 1));
+			int y0 = yi(y) + ((y % 3 == 0) ? 3 : 1);
+			int y1 = yi(y + 1) - (((y + 1) % 3 == 0 ? 3 : 1));
+
 			gr.setColor(Color.green);
-			for( int i=0; i<unit/10; ++i )
-				gr.drawRect(x0+i,y0+i,x1-x0-2*i,y1-y0-2*i);
+			for (int i = 0; i < unit / 10; ++i)
+				gr.drawRect(x0 + i, y0 + i, x1 - x0 - 2 * i, y1 - y0 - 2 * i);
 		}
 	}
 }
-

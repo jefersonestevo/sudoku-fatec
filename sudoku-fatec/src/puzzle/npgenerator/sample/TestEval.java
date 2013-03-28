@@ -52,8 +52,6 @@ class TestEval {
 	*/
 	};
 	
-	private static boolean[][] hint = new boolean[Const.size][Const.size];	
-	
 	private static int[][]	answer   = new int[Const.size][Const.size];		// “š‚¦
 	
 	public static void main(String[] args) {

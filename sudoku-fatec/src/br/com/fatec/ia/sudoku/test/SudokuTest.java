@@ -17,14 +17,14 @@ public class SudokuTest {
 		SudokuUtils.printSudoku(sudoku.getJogoReal());
 
 		System.out.println("\n");
-		System.out.println(sudoku.isFimJogo());
+		System.out.println(sudoku.validarFimJogo());
 
 		for (int i = 0; i < sudoku.getJogoCompleto().length; i++) {
 			for (int j = 0; j < sudoku.getJogoCompleto()[i].length; j++) {
 				sudoku.addPalpite(i, j, sudoku.getJogoCompleto()[i][j]);
 			}
 		}
-		System.out.println(sudoku.isFimJogo());
+		System.out.println(sudoku.validarFimJogo());
 	}
 
 }

@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public enum Dificuldade implements Serializable {
 	FACIL(50), //
-	INTERMEDIARIO(40), //
+	INTERMEDIARIO(80), //
 	DIFICIL(30);
 
 	private int quantidadeCasasExibidas;

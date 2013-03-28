@@ -26,12 +26,12 @@ public class ModalSelecaoNumero extends JDialog {
 			int coordY) {
 		super(parent, modal);
 		Dimension dimensionParentFrame = parent.getSize();
-		setSize(180, 120);
+		setSize(180, 150);
 		Dimension dimensionDialog = getSize();
 		int x = parent.getX()
 				+ ((dimensionParentFrame.width - dimensionDialog.width) / 2);
-		setLocation(x, parent.getY() + parent.getInsets().top + 50);
-		setUndecorated(true);
+		setLocation(x, parent.getY() + parent.getInsets().top + 150);
+		setResizable(false);
 		setModal(modal);
 		setModalityType(ModalityType.APPLICATION_MODAL);
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -75,13 +75,5 @@ public class ModalSelecaoNumero extends JDialog {
 
 		panelPrincipal.add(panelBotoesInferiores);
 		getContentPane().add(panelPrincipal, BorderLayout.CENTER);
-		// TODO - Gerar modal com os numeros de 1 a 9 para selecao pelo usuario
-		// JButton buttonClose = new JButton("Close");
-		// buttonClose.addActionListener(new ActionListener() {
-		// public void actionPerformed(ActionEvent e) {
-		// dispose();
-		// }
-		// });
-		// getContentPane().add(buttonClose, BorderLayout.CENTER);
 	}
 }

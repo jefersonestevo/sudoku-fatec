@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.border.LineBorder;
 
 import br.com.fatec.ia.sudoku.JogoSudoku;
 import br.com.fatec.ia.sudoku.view.menu.PreencherBotaoListener;
@@ -19,6 +20,7 @@ public class GeradorSudokuView {
 
 		// Painel do Sudoku com os separators
 		JPanel panel = new JPanel(new GridLayout(3, 3));
+		panel.setSize(450, 450);
 
 		int[][] campos = jogo.getJogoReal();
 
@@ -35,19 +37,23 @@ public class GeradorSudokuView {
 				panelFilho = panelQuadrante[quadX][quadY];
 				if (panelFilho == null) {
 					panelFilho = new JPanel(new GridLayout(3, 3));
+					panelFilho.setSize(150, 150);
+					panelFilho.setBorder(new LineBorder(Color.BLACK));
 					panelQuadrante[quadX][quadY] = panelFilho;
 				}
 
 				JButton botao = null;
 				if (JogoSudoku.POSICAO_EM_BRANCO != campos[i][j]) {
 					botao = new JButton(new Integer(campos[i][j]).toString());
-					botao.setBackground(Color.GREEN);
+					botao.setBackground(SudokuConstants.COR_JOGO_REAL);
 				} else {
 					botao = new JButton();
 					botao.addActionListener(listenerBotao);
+					botao.setBackground(SudokuConstants.COR_PADRAO);
 				}
+				botao.setSize(45, 45);
 				botao.setName(SudokuConstants.PREFIXO_BOTAO + i + j);
-				
+
 				panelFilho.add(botao);
 
 				// Add botao no holder
