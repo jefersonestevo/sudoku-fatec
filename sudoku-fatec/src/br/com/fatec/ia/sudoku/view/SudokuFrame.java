@@ -62,6 +62,7 @@ public class SudokuFrame extends JFrame {
 		panelCorpo.setVisible(true);
 		panelCorpo.setLocation(getX(), getY() + 100);
 		add(panelCorpo);
+		limpar();
 	}
 
 	public void addNovoJogo(PanelJogoHolder holder) {
