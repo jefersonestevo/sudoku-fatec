@@ -17,6 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.Timer;
 
+import br.com.fatec.ia.sudoku.utils.SaveUtils;
 import br.com.fatec.ia.sudoku.utils.SudokuUtils;
 import br.com.fatec.ia.sudoku.view.menu.MenuListener;
 import br.com.fatec.ia.sudoku.view.utils.Messages;
@@ -165,20 +166,28 @@ public class SudokuFrame extends JFrame {
 		menuJogo.add(menuNovo);
 		menuJogo.add(new JSeparator());
 
+		boolean addSeparator = false;
 		if (SudokuHolder.getJogoAtual() != null) {
 			JMenuItem menuSalvar = new JMenuItem(
 					Messages.getMessage("Menu_Salvar"));
 			menuSalvar.setName(MenuListener.MENU_SALVAR);
 			menuSalvar.addActionListener(new MenuListener());
 			menuJogo.add(menuSalvar);
+			addSeparator = true;
 		}
 
-		JMenuItem menuCarregar = new JMenuItem(
-				Messages.getMessage("Menu_Carregar"));
-		menuCarregar.setName(MenuListener.MENU_CARREGAR);
-		menuCarregar.addActionListener(new MenuListener());
-		menuJogo.add(menuCarregar);
-		menuJogo.add(new JSeparator());
+		if (SaveUtils.existeJogoSalvo()) {
+			JMenuItem menuCarregar = new JMenuItem(
+					Messages.getMessage("Menu_Carregar"));
+			menuCarregar.setName(MenuListener.MENU_CARREGAR);
+			menuCarregar.addActionListener(new MenuListener());
+			menuJogo.add(menuCarregar);
+			addSeparator = true;
+		}
+
+		if (addSeparator) {
+			menuJogo.add(new JSeparator());
+		}
 
 		JMenuItem menuSair = new JMenuItem(Messages.getMessage("Menu_Sair"));
 		menuSair.setName(MenuListener.MENU_SAIR);

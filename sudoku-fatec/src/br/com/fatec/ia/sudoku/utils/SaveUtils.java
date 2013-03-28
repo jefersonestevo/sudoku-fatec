@@ -1,5 +1,6 @@
 package br.com.fatec.ia.sudoku.utils;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -12,6 +13,11 @@ import br.com.fatec.ia.sudoku.view.SudokuHolder;
 public class SaveUtils {
 
 	private static final String ARQUIVO_SAVE = "savegame.sudoku";
+
+	public static boolean existeJogoSalvo() {
+		File f = new File(ARQUIVO_SAVE);
+		return f.exists();
+	}
 
 	public static void salvarJogo() {
 		FileOutputStream fos = null;
