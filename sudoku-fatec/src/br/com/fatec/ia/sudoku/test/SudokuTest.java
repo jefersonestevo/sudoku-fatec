@@ -9,8 +9,7 @@ public class SudokuTest {
 
 	public static void main(String[] args) {
 
-		GeradorSudoku gerador = new GeradorSudoku();
-		JogoSudoku sudoku = gerador.gerarJogoSudoku(Dificuldade.DIFICIL);
+		JogoSudoku sudoku = GeradorSudoku.gerarJogoSudoku(Dificuldade.DIFICIL);
 
 		SudokuUtils.printSudoku(sudoku.getJogoCompleto());
 		System.out.println("\n");

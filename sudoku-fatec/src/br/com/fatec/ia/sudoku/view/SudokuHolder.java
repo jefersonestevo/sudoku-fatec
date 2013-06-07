@@ -28,7 +28,7 @@ public class SudokuHolder {
 	}
 
 	public static void gerarNovoJogo(Dificuldade dificuldade) {
-		JogoSudoku jogo = new GeradorSudoku().gerarJogoSudoku(dificuldade);
+		JogoSudoku jogo = GeradorSudoku.gerarJogoSudoku(dificuldade);
 		gerarJogoAPartirDe(jogo);
 	}
 
