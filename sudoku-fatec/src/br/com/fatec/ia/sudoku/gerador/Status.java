@@ -1,5 +1,8 @@
 package br.com.fatec.ia.sudoku.gerador;
 
+import br.com.fatec.ia.sudoku.utils.Calculadora;
+import br.com.fatec.ia.sudoku.utils.Constantes;
+
 
 public class Status {
 

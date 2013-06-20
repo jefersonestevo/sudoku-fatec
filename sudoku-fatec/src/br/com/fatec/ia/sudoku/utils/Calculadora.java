@@ -1,6 +1,7 @@
-package br.com.fatec.ia.sudoku.gerador;
+package br.com.fatec.ia.sudoku.utils;
 
 import java.util.Random;
+
 
 
 public class Calculadora {

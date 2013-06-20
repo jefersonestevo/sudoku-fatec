@@ -2,6 +2,7 @@ package br.com.fatec.ia.sudoku.gerador;
 
 import br.com.fatec.ia.sudoku.Dificuldade;
 import br.com.fatec.ia.sudoku.JogoSudoku;
+import br.com.fatec.ia.sudoku.utils.Constantes;
 
 public class GeradorSudoku {
 

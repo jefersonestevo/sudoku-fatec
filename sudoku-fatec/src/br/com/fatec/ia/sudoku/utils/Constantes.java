@@ -1,4 +1,4 @@
-package br.com.fatec.ia.sudoku.gerador;
+package br.com.fatec.ia.sudoku.utils;
 
 public class Constantes {
     public static final int TAMANHO = 9;
